@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Renders the signature PNGs (2x) into assets/sig/ with headless Chrome.
-# Rerun after adding assets/photo.jpg or changing initials.
+# Rerun after changing initials. The animated art is render-gif.sh.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 CHROME=${CHROME:-"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"}
@@ -12,6 +12,5 @@ shot() { # name part width height
     "file://$PWD/signature/render.html?part=$2" 2>/dev/null
   echo "assets/sig/$1.png"
 }
-shot art art 260 240
 shot mark mark 48 48
 for i in globe linkedin github mail; do shot "$i" "$i" 32 32; done

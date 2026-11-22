@@ -50,6 +50,31 @@ function renderProfile() {
   $("dockChat").innerHTML = icon("chat");
 }
 
+const motionPaused = () => document.documentElement.classList.contains("motion-paused");
+
+// One control pauses all looping motion (CSS animations, typewriter, 3D card idle). Remembered per browser.
+function setupMotionToggle() {
+  const btn = $("dockMotion");
+  const apply = (paused) => {
+    document.documentElement.classList.toggle("motion-paused", paused);
+    btn.setAttribute("aria-pressed", String(paused));
+    btn.setAttribute("aria-label", paused ? "Play motion" : "Pause motion");
+    btn.innerHTML = icon(paused ? "play" : "pause");
+  };
+  let saved = false;
+  try {
+    saved = localStorage.getItem("motion-paused") === "1";
+  } catch {}
+  apply(saved);
+  btn.addEventListener("click", () => {
+    const paused = !motionPaused();
+    apply(paused);
+    try {
+      localStorage.setItem("motion-paused", paused ? "1" : "0");
+    } catch {}
+  });
+}
+
 // Typewriter placeholder on the ask bar; stops while the field is in use.
 function typePlaceholder() {
   const input = $("askInput");
@@ -58,7 +83,7 @@ function typePlaceholder() {
   let n = 0;
   let timer;
   const tick = () => {
-    if (document.activeElement === input || input.value) {
+    if (document.activeElement === input || input.value || motionPaused()) {
       input.placeholder = text;
       timer = setTimeout(tick, 1200);
       return;
@@ -264,6 +289,7 @@ function setupStories() {
 }
 
 renderProfile();
+setupMotionToggle();
 typePlaceholder();
 revealOnScroll();
 setupPersona();

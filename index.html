@@ -6,11 +6,23 @@
   <meta name="theme-color" content="#0b0b0d">
   <title>Jashanprit Singh · AI Engineer</title>
   <meta name="description" content="AI voice agents, chatbots and automation. Profile, work and a scripted digital persona.">
+  <link rel="icon" href="assets/sig/mark.png">
   <link rel="stylesheet" href="styles.css">
   <script src="config.js"></script>
   <script src="icons.js"></script>
   <script src="persona.js"></script>
   <script src="app.js" defer></script>
+  <script type="importmap">
+    { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    },
+    "integrity": {
+      "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js": "sha384-GY5FqjttLCFRt/McQbyaVdCk2O1IQtOeX8Py6NfD89BIAsIyJFRl4UgSXrk2vXAk",
+      "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/environments/RoomEnvironment.js": "sha384-9ItPPH2vgKbkvgrqTKq7ptGYe+WuAnqlZtlqleJW4/CJjnM5R7C+efD6iS7ADPJ9"
+    } }
+  </script>
+  <script type="module" src="holo-boot.js"></script>
 </head>
 <body>
   <main class="page" id="top">
@@ -20,6 +32,7 @@
         <div class="monogram" id="monogram" aria-hidden="true"></div>
       </div>
       <div class="hero-fade" aria-hidden="true"></div>
+      <div class="holo" id="holo" tabindex="0" role="button" aria-label="3D business card. Press Enter to flip it." hidden></div>
 
       <div class="hero-ui">
         <p class="loc"><span class="dot" aria-hidden="true"></span><span id="pinIcon"></span><span id="location"></span></p>
@@ -68,6 +81,7 @@
     <a href="#top" aria-label="Profile" id="dockTop"></a>
     <a href="#work" aria-label="Work" id="dockWork"></a>
     <button type="button" aria-label="Chat with my digital persona" id="dockChat"></button>
+    <button type="button" aria-label="Pause motion" aria-pressed="false" id="dockMotion"></button>
   </nav>
 
   <dialog class="persona" id="persona" aria-labelledby="personaTitle">

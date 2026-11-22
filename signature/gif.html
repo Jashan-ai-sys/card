@@ -1,0 +1,41 @@
+<!doctype html>
+<!-- Renders a signature animation as a vertical strip of frames; render-gif.sh screenshots it and
+     ffmpeg cuts it into a GIF. ?kind=tile → the classic signature's art (2× its 86×80 slot);
+     ?kind=card → the whole holo card signature (1.3× its 280×175 slot). Title becomes "done"
+     only after every frame is drawn; render-gif.sh checks it. -->
+<html>
+<head>
+<meta charset="utf-8">
+<style>html, body { margin: 0; background: #fff; } canvas { display: block; }</style>
+<script src="../config.js"></script>
+<script src="../icons.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" integrity="sha384-8FWZA6BGMXhsfO+BLtrJK0We6gg5o1JyO8xQm6peWDEUs17ACA5ziE/NIAkl9z2k" crossorigin="anonymous"></script>
+<script type="importmap">
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    },
+    "integrity": {
+      "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js": "sha384-GY5FqjttLCFRt/McQbyaVdCk2O1IQtOeX8Py6NfD89BIAsIyJFRl4UgSXrk2vXAk",
+      "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/environments/RoomEnvironment.js": "sha384-9ItPPH2vgKbkvgrqTKq7ptGYe+WuAnqlZtlqleJW4/CJjnM5R7C+efD6iS7ADPJ9"
+    } }
+</script>
+</head>
+<body>
+<canvas id="strip"></canvas>
+<script type="module">
+  import { createArtTile, createCardLoop } from "../card3d.js";
+  const q = new URLSearchParams(location.search);
+  const W = +q.get("w"), H = +q.get("h"), FRAMES = +q.get("frames");
+  const strip = document.getElementById("strip");
+  strip.width = W;
+  strip.height = H * FRAMES;
+  const ctx = strip.getContext("2d");
+  const gl = document.createElement("canvas");
+  const make = q.get("kind") === "card" ? createCardLoop : createArtTile;
+  const frame = await make(gl, { w: W, h: H });
+  for (let i = 0; i < FRAMES; i++) ctx.drawImage(frame(i / FRAMES), 0, i * H, W, H);
+  document.title = "done";
+</script>
+</body>
+</html>
