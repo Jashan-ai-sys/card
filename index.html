@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0d">
+  <title>Jashanprit Singh · AI Engineer</title>
+  <meta name="description" content="AI voice agents, chatbots and automation. Profile, work and a scripted digital persona.">
+  <link rel="stylesheet" href="styles.css">
+  <script src="config.js"></script>
+  <script src="icons.js"></script>
+  <script src="persona.js"></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="page" id="top">
+    <section class="hero" aria-label="Profile">
+      <div class="portrait" id="portrait">
+        <img id="portraitImg" alt="" decoding="async">
+        <div class="monogram" id="monogram" aria-hidden="true"></div>
+      </div>
+      <div class="hero-fade" aria-hidden="true"></div>
+
+      <div class="hero-ui">
+        <p class="loc"><span class="dot" aria-hidden="true"></span><span id="pinIcon"></span><span id="location"></span></p>
+
+        <form class="ask glass" id="askForm" role="search">
+          <label class="sr-only" for="askInput">Ask my digital persona</label>
+          <span class="ask-glow" aria-hidden="true"></span>
+          <input id="askInput" autocomplete="off" placeholder="Ask me anything…">
+          <span class="ask-mic" id="askMic" aria-hidden="true"></span>
+          <button class="ask-send" id="askSend" type="submit" aria-label="Ask"></button>
+        </form>
+
+        <article class="card glass">
+          <div class="card-head">
+            <span class="avatar" id="avatar" aria-hidden="true"></span>
+            <div class="who">
+              <h1 id="name"></h1>
+              <p id="tagline"></p>
+            </div>
+            <a class="stat" href="#work"><b id="workCount"></b><span>projects</span></a>
+          </div>
+          <nav class="socials" id="socials" aria-label="Contact and links"></nav>
+        </article>
+      </div>
+    </section>
+
+    <section class="currently glass" aria-labelledby="curHead">
+      <h2 id="curHead"><span class="dot" aria-hidden="true"></span>Currently</h2>
+      <p id="currently"></p>
+    </section>
+
+    <section class="work" id="work" aria-labelledby="workHead">
+      <div class="row-head">
+        <h2 id="workHead">Work in slides</h2>
+        <span id="workMeta"></span>
+      </div>
+      <ul class="slides" id="slides"></ul>
+    </section>
+
+    <footer class="foot">
+      <a id="siteLink">Full portfolio</a>
+    </footer>
+  </main>
+
+  <nav class="dock glass" aria-label="Sections">
+    <a href="#top" aria-label="Profile" id="dockTop"></a>
+    <a href="#work" aria-label="Work" id="dockWork"></a>
+    <button type="button" aria-label="Chat with my digital persona" id="dockChat"></button>
+  </nav>
+
+  <dialog class="persona" id="persona" aria-labelledby="personaTitle">
+    <div class="persona-edge" aria-hidden="true"></div>
+    <header class="persona-head">
+      <span class="avatar lg" id="personaAvatar" aria-hidden="true"></span>
+      <p class="persona-name" id="personaTitle"></p>
+      <button class="persona-close" id="personaClose" type="button" aria-label="Close chat"></button>
+      <div class="tabs">
+        <a class="tab" id="tabHuman"></a>
+        <span class="tab on" aria-current="true"><span id="tabSpark"></span>Digital persona</span>
+      </div>
+    </header>
+    <div class="thread" id="thread" aria-live="polite"></div>
+    <div class="chips" id="chips"></div>
+    <form class="persona-ask" id="personaForm">
+      <label class="sr-only" for="personaInput">Message</label>
+      <input id="personaInput" autocomplete="off" placeholder="Ask me anything">
+      <button type="submit" id="personaSend" aria-label="Send"></button>
+    </form>
+    <p class="persona-note">Scripted answers, not a live AI.</p>
+  </dialog>
+
+  <dialog class="story" id="story" aria-label="Project story">
+    <div class="bars" id="bars" aria-hidden="true"></div>
+    <button class="story-close" id="storyClose" type="button" aria-label="Close"></button>
+    <button class="story-nav prev" id="storyPrev" type="button" aria-label="Previous project"></button>
+    <button class="story-nav next" id="storyNext" type="button" aria-label="Next project"></button>
+    <div class="story-body" id="storyBody"></div>
+  </dialog>
+</body>
+</html>

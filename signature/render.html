@@ -1,0 +1,52 @@
+<!doctype html>
+<!-- Source art for the signature PNGs. render-signature.sh screenshots it once per ?part=. -->
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../config.js"></script>
+<script src="../icons.js"></script>
+<style>
+  html, body { margin: 0; background: transparent; overflow: hidden; }
+  body { font-family: -apple-system, "SF Pro Display", "Helvetica Neue", Arial, sans-serif; }
+  .mark { width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center;
+    background: linear-gradient(145deg, #5b86ff, #1f3fd1 70%); color: #fff; font-weight: 800; font-size: 19px; letter-spacing: -0.04em;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.35); }
+  .ico { width: 32px; height: 32px; color: #7f7f8c; }
+  .ico svg { width: 100%; height: 100%; display: block; }
+
+  /* photo cut-out with diagonal slashes, 260×240 */
+  .art { position: relative; width: 260px; height: 240px; background: #fff; border-radius: 20px; overflow: hidden; }
+  .shard { position: absolute; bottom: 0; height: 100%; transform: skewX(-28deg); transform-origin: bottom; }
+  .s1 { left: 150px; width: 40px; background: linear-gradient(#d9d9de, #f3f3f5); }
+  .s2 { left: 205px; width: 22px; height: 78%; background: linear-gradient(#c9c9cf, #ececf0); }
+  .cut { position: absolute; inset: 0; clip-path: polygon(34% 0, 96% 0, 66% 100%, 4% 100%); overflow: hidden; }
+  .cut img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; filter: grayscale(.15) contrast(1.05); }
+  .cut .mono { position: absolute; inset: 0; display: grid; place-items: center; font-weight: 800; font-size: 96px; letter-spacing: -0.06em;
+    color: rgba(28,18,10,.8); background:
+      repeating-linear-gradient(-38deg, transparent 0 24px, rgba(255,244,214,.3) 24px 48px, transparent 48px 78px),
+      radial-gradient(120% 80% at 40% 20%, #f3dfb8, #cfa776 45%, #6b4a2f 85%); }
+  .slash { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background:
+    linear-gradient(to right, transparent calc(50% - 3px), #fff calc(50% - 3px) calc(50% + 3px), transparent calc(50% + 3px));
+    transform: skewX(-31deg); }
+</style>
+</head>
+<body>
+<script>
+  const P = window.PROFILE;
+  const part = new URLSearchParams(location.search).get("part");
+  if (part === "mark") {
+    document.body.innerHTML = `<div class="mark">${P.initials}</div>`;
+  } else if (part === "art") {
+    document.body.innerHTML = `<div class="art">
+      <div class="shard s1"></div><div class="shard s2"></div>
+      <div class="cut"><img alt=""><div class="mono">${P.initials}</div><div class="slash"></div></div></div>`;
+    const img = document.querySelector(".cut img");
+    img.onload = () => document.querySelector(".mono").remove();
+    img.onerror = () => img.remove();
+    img.src = "../" + P.photo;
+  } else {
+    document.body.innerHTML = `<div class="ico">${icon(part)}</div>`;
+  }
+</script>
+</body>
+</html>

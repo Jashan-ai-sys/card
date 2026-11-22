@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Email signature · copy for Gmail</title>
+<script src="config.js"></script>
+<style>
+  body { margin: 0; padding: 32px 16px; background: #f2f2f5; font: 15px/1.5 -apple-system, "Segoe UI", Roboto, sans-serif; color: #1c1c22; }
+  main { max-width: 640px; margin: 0 auto; display: grid; gap: 18px; }
+  h1 { font-size: 20px; margin: 0; }
+  .preview { background: #fff; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,.08); overflow-x: auto; }
+  button { justify-self: start; padding: 11px 18px; border-radius: 12px; border: 0; background: #1f3fd1; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+  ol { margin: 0; padding-left: 20px; color: #4a4a55; }
+  .warn { background: #fff4d6; border-radius: 10px; padding: 10px 14px; color: #5c4600; }
+  code { font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Your email signature</h1>
+  <p class="warn" id="warn" hidden></p>
+  <div class="preview" id="preview"></div>
+  <button id="copy" type="button">Copy signature</button>
+  <p id="status" role="status"></p>
+  <ol>
+    <li>Host this folder first (images load from <code id="base"></code>).</li>
+    <li>Click <b>Copy signature</b>.</li>
+    <li>Gmail → Settings → See all settings → General → Signature → Create new → paste → Save changes at the bottom.</li>
+  </ol>
+</main>
+<script>
+const P = window.PROFILE;
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const img = (name) => `${P.baseUrl}assets/sig/${name}.png`;
+const profileUrl = P.baseUrl;
+const social = P.links.filter((l) => l.id !== "globe");
+const railIcons = [
+  { id: "globe", url: P.website, label: "Portfolio" },
+  ...social.map((l) => ({ id: l.id, url: l.url, label: l.label })),
+  { id: "mail", url: `mailto:${P.email}`, label: "Email" },
+];
+const muted = "color:#6b6b76;text-decoration:none;";
+// One text line per row: Outlook (Windows) ignores padding on <div> but honours it on <td>.
+const line = (html, style = "") => `<tr><td style="font-size:11px;line-height:16px;${style}">${html}</td></tr>`;
+
+// Rules for email clients: tables + inline styles + PNGs only (no <style>, flexbox, SVG or background
+// images). Outer cells carry no vertical padding because Outlook copies the largest one to every cell
+// in a row, which would lift the art off the bottom edge. Narrowest render is about 320px.
+const signature = `
+<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:separate;border:1px solid #e2e2e8;border-radius:14px;background:#ffffff;font-family:Arial,Helvetica,sans-serif;">
+  <tr>
+    <td valign="top" style="padding:0 0 0 10px;">
+      <table cellpadding="0" cellspacing="0" border="0" role="presentation"><tr><td style="padding:10px 0;">
+        <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:separate;border:1px solid #e2e2e8;border-radius:10px;">
+          <tr><td align="center" style="padding:6px 6px 4px;"><a href="${esc(profileUrl)}"><img src="${img("mark")}" width="24" height="24" alt="${esc(P.initials)}" style="display:block;border:0;border-radius:6px;"></a></td></tr>
+          ${railIcons.map((r) => `<tr><td align="center" style="padding:5px 6px;"><a href="${esc(r.url)}"><img src="${img(r.id)}" width="14" height="14" alt="${esc(r.label)}" style="display:block;border:0;"></a></td></tr>`).join("")}
+        </table>
+      </td></tr></table>
+    </td>
+    <td valign="top" style="padding:0 4px 0 10px;">
+      <table cellpadding="0" cellspacing="0" border="0" role="presentation">
+        ${line(esc(P.firstName.toUpperCase()), "padding-top:12px;letter-spacing:4px;color:#1c1c22;font-weight:700;")}
+        <tr><td style="padding-top:6px;font-size:16px;line-height:20px;font-weight:700;"><a href="${esc(profileUrl)}" style="color:#14141a;text-decoration:none;">${esc(P.name)}</a></td></tr>
+        ${line(esc(P.role), "font-size:12px;color:#6b6b76;")}
+        ${line(esc(P.tagline), "padding-top:6px;font-weight:700;color:#14141a;")}
+        ${line(`<a href="mailto:${esc(P.email)}" style="${muted}">${esc(P.email)}</a>`)}
+        ${line([{ url: P.website, label: new URL(P.website).host }, ...social]
+          .map((l) => `<a href="${esc(l.url)}" style="${muted}">${esc(l.label)}</a>`).join(" &middot; "))}
+        ${line(`<a href="${esc(profileUrl)}" style="color:#1f3fd1;text-decoration:none;">&#10022; Ask my digital persona &rarr;</a>`, "padding:6px 0 12px;font-weight:700;")}
+      </table>
+    </td>
+    <td valign="bottom" style="padding:0 8px 0 0;">
+      <a href="${esc(profileUrl)}"><img src="${img("art")}" width="86" height="80" alt="${esc(P.name)}" style="display:block;border:0;"></a>
+    </td>
+  </tr>
+</table>`.trim();
+
+const plain = [P.name, P.role, P.email, P.website, `Ask my digital persona: ${profileUrl}`].join("\n");
+
+document.getElementById("preview").innerHTML = signature;
+document.getElementById("base").textContent = P.baseUrl;
+
+// Warn when previewing from disk: the preview images come from baseUrl, which may not be live yet.
+const probe = new Image();
+probe.onerror = () => {
+  const w = document.getElementById("warn");
+  w.hidden = false;
+  w.textContent = `Images aren't loading from ${P.baseUrl}. Host this folder there (or change baseUrl in config.js) before pasting into Gmail.`;
+};
+probe.src = img("mark");
+
+document.getElementById("copy").addEventListener("click", async () => {
+  const status = document.getElementById("status");
+  try {
+    await navigator.clipboard.write([new ClipboardItem({
+      "text/html": new Blob([signature], { type: "text/html" }),
+      "text/plain": new Blob([plain], { type: "text/plain" }),
+    })]);
+    status.textContent = "Copied. Paste it into Gmail's signature box.";
+  } catch {
+    // No async clipboard (older browser, file://): select the preview and use the legacy copy command.
+    const range = document.createRange();
+    range.selectNodeContents(document.getElementById("preview"));
+    getSelection().removeAllRanges();
+    getSelection().addRange(range);
+    status.textContent = document.execCommand("copy")
+      ? "Copied. Paste it into Gmail's signature box."
+      : "The signature is selected. Copy the selection, then paste it into Gmail.";
+  }
+});
+</script>
+</body>
+</html>
