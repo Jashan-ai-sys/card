@@ -39,7 +39,7 @@
     <li>Host this folder first (images load from <code id="base"></code>).</li>
     <li>Click <b>Copy signature</b>.</li>
     <li>Gmail → Settings → See all settings → General → Signature → Create new → paste → Save changes at the bottom.</li>
-    <li>If Gmail still shows only plain text: delete it, then drag over the preview above with your mouse, press Ctrl+C (⌘C), and paste again with Ctrl+V. Don't use Ctrl+Shift+V, which pastes plain text.</li>
+    <li>Paste with Ctrl+V (⌘V), not Ctrl+Shift+V, which always pastes plain text.</li>
   </ol>
 </main>
 <script>
@@ -104,7 +104,6 @@ const holo = `
 const variants = { holo, classic };
 let signature = holo;
 
-const plain = [P.name, P.role, P.email, P.website, `Ask my digital persona: ${profileUrl}`].join("\n");
 
 const show = (name) => {
   signature = variants[name];
@@ -138,29 +137,22 @@ function checkImages() {
   update();
 }
 
-// Copy through a `copy` event, the same path as selecting text and pressing Ctrl+C. Gmail's signature
-// editor pasted only the plain-text flavour when the HTML came from navigator.clipboard.write
-// (Chrome sanitises that HTML), so the async Clipboard API is deliberately not used here.
+// Copy the rendered preview as a selection: exactly what dragging over it and pressing Ctrl+C does,
+// so the browser builds the clipboard HTML itself. Gmail's signature editor pasted only plain text
+// when the page handed it an HTML string (tried both navigator.clipboard.write and a copy event).
 document.getElementById("copy").addEventListener("click", () => {
   const status = document.getElementById("status");
-  const onCopy = (e) => {
-    e.clipboardData.setData("text/html", signature);
-    e.clipboardData.setData("text/plain", plain);
-    e.preventDefault();
-  };
-  document.addEventListener("copy", onCopy);
-  const ok = document.execCommand("copy");
-  document.removeEventListener("copy", onCopy);
-  if (ok) {
-    status.textContent = "Copied. Paste it into Gmail's signature box with Ctrl+V (⌘V on a Mac).";
-    return;
-  }
-  // Copy command blocked: select the preview so a manual Ctrl+C copies the rendered signature.
   const range = document.createRange();
   range.selectNodeContents(document.getElementById("preview"));
-  getSelection().removeAllRanges();
-  getSelection().addRange(range);
-  status.textContent = "The signature is selected. Press Ctrl+C (⌘C on a Mac), then paste it into Gmail.";
+  const sel = getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+  if (document.execCommand("copy")) {
+    sel.removeAllRanges();
+    status.textContent = "Copied. Paste it into Gmail's signature box with Ctrl+V (⌘V on a Mac).";
+  } else {
+    status.textContent = "The signature is selected. Press Ctrl+C (⌘C on a Mac), then paste it into Gmail.";
+  }
 });
 </script>
 </body>
